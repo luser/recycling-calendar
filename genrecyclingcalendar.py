@@ -38,11 +38,15 @@ def iter_recycling_pickup_days(start_year, num_years):
         yield weeks[1].replace(days=+4)
         yield weeks[3].replace(days=+4)
 
-def make_recycling_calendar(start_year, num_years):
+def make_recycling_calendar(start_year=None, num_years=2):
+    if start_year is None:
+        start_year = arrow.now().year - 1
     cal = Calendar()
     now = arrow.now()
     cal.add('prodid', '-//Recycling pickup generator//mielczarek.org//')
     cal.add('version', '1.0')
+    cal.add('x-wr-calname', 'Recycling')
+    cal.add('x-apple-calendar-color','#0F6A0F')
     for day in iter_recycling_pickup_days(start_year, num_years):
         event = Event()
         event.add('summary', 'Recycling Pickup')
@@ -50,7 +54,7 @@ def make_recycling_calendar(start_year, num_years):
         event.add('dtend', day.replace(days=+1).date())
         event.add('dtstamp', now.datetime)
         cal.add_component(event)
-    print cal.to_ical()
+    return cal.to_ical()
 
 if __name__ == '__main__':
-    make_recycling_calendar(arrow.now().year - 1, 2)
+    print make_recycling_calendar()
